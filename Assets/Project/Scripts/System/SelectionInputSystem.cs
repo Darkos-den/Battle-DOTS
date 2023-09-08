@@ -3,13 +3,11 @@ using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Physics;
-using Unity.Physics.Systems;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Darkos {
 
-    [UpdateInGroup(typeof(InitializationSystemGroup))]
     [DisableAutoCreation]
     public partial class SelectionInputSystem : SystemBase {
 
@@ -72,7 +70,7 @@ namespace Darkos {
             if (collision.CastRay(raycastInput, out var hit)) {
                 var entity = collision.Bodies[hit.RigidBodyIndex].Entity;
 
-                EntityManager.AddComponent<TargetTag>(entity);
+                SystemAPI.SetComponentEnabled<TargetTag>(entity, true);
             }
         }
     }

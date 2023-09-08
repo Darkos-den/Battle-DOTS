@@ -26,7 +26,11 @@ namespace Darkos {
 
         protected override void OnUpdate() {
 
-            Debug.Log(">> GameState: " + _gameState);
+            if (_gameState != GameState.TargetSelection) {
+                Debug.Log(">> GameState: " + _gameState);
+            }
+            
+            
             switch(_gameState) {
                 case GameState.Idle: {
                         //пометить всех игроков и юнитов как готовых к действиям
@@ -36,6 +40,10 @@ namespace Darkos {
                         break;
                     }
                 case GameState.UnitSelection: {
+                        foreach (var unitActive in SystemAPI.Query<EnabledRefRW<ActiveTag>>().WithAll<UnitComponent>()) {
+                            unitActive.ValueRW = false;
+                        }
+
                         //получаем текущего игрока
                         var playerEntity = SystemAPI.QueryBuilder()
                             .WithAll<PlayerComponent>()
@@ -49,12 +57,13 @@ namespace Darkos {
 
                         //пробуем активирвоать юнит
                         foreach((var component, var ready, var active, var entity) in
-                            SystemAPI.Query<UnitComponent, EnabledRefRO<ReadyToActionTag>, EnabledRefRW<ActiveTag>>()
+                            SystemAPI.Query<UnitComponent, EnabledRefRW<ReadyToActionTag>, EnabledRefRW<ActiveTag>>()
                             .WithEntityAccess()
                             .WithOptions(EntityQueryOptions.IgnoreComponentEnabledState)
                             .WithSharedComponentFilter(new PlayerIdComponent { Id = player.Id })
                         ) {
                             if (ready.ValueRO) {
+                                ready.ValueRW = false;
                                 active.ValueRW = true;
                                 activeUnit = entity;
                                 break;
@@ -85,12 +94,18 @@ namespace Darkos {
                         break;
                     }
                 case GameState.ActionSelection: {
+                        foreach (var playerActive in SystemAPI.Query<EnabledRefRW<ActiveTag>>().WithAll<TargetComponent>()) {
+                            playerActive.ValueRW = false;
+                        }
+
                         //проверяем выбор действия
+                        UnitActionInput.Instance.Enable();
                         _actionInputSystem.Update(World.Unmanaged);
 
-                        if (SystemAPI.TryGetSingletonEntity<TargetComponent>(out Entity entity)) {
+                        foreach (var playerActive in SystemAPI.Query<EnabledRefRW<ActiveTag>>().WithAll<TargetComponent>()) {
                             //если действие выбрано
                             //выбираем цель
+                            UnitActionInput.Instance.Disable();
                             _gameState = GameState.TargetSelection;
                         }
 
@@ -107,10 +122,23 @@ namespace Darkos {
                         break;
                     }
                 case GameState.ActionExecution: {
-                        //todo: TBD
+
+                        var target = SystemAPI.GetSingletonEntity<TargetComponent>();
+                        if (SystemAPI.HasComponent<AttackActionFlag>(target)) {
+                            ApplyDamage();
+                        }
+                        if (SystemAPI.HasComponent<HealActionFlag>(target)) {
+                            ApplyHeal();
+                        }
+
+                        _gameState = GameState.UnitSelection;
+
                         break;
                     }
                 case GameState.PlayerActivation: {
+                        foreach (var playerActive in SystemAPI.Query<EnabledRefRW<ActiveTag>>().WithAll<PlayerComponent>()) {
+                            playerActive.ValueRW = false;
+                        }
                         var query = SystemAPI.QueryBuilder()
                             .WithAll<PlayerComponent>()
                             .WithAll<ReadyToActionTag>()
@@ -127,6 +155,7 @@ namespace Darkos {
                             var entity = array.Last();
 
                             //помечаем его как активного
+                            SystemAPI.SetComponentEnabled<ReadyToActionTag>(entity, false);
                             SystemAPI.SetComponentEnabled<ActiveTag>(entity, true);
 
                             //выбираем юнит
@@ -150,6 +179,20 @@ namespace Darkos {
                 .WithOptions(EntityQueryOptions.IgnoreComponentEnabledState)
             ) {
                 tag.ValueRW = true;
+            }
+        }
+
+        private void ApplyDamage() {
+            foreach ((var target, var health, var entity) in SystemAPI.Query<EnabledRefRW<TargetTag>, RefRW<HealthComponent>>().WithEntityAccess()) {
+                health.ValueRW.Value -= 10;
+                target.ValueRW = false;
+            }
+        }
+
+        private void ApplyHeal() {
+            foreach ((var target, var health, var entity) in SystemAPI.Query<EnabledRefRW<TargetTag>, RefRW<HealthComponent>>().WithEntityAccess()) {
+                health.ValueRW.Value += 10;
+                target.ValueRW = false;
             }
         }
     }

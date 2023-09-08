@@ -2,7 +2,6 @@ using Unity.Entities;
 
 namespace Darkos {
 
-    [UpdateInGroup(typeof(InitializationSystemGroup))]
     [DisableAutoCreation]
     public partial class ActionSelectionSystem : SystemBase {
 
@@ -19,8 +18,11 @@ namespace Darkos {
 
         protected override void OnUpdate() {
             if (_lastAction != null) {
-                _lastAction = null;
-                var entity = EntityManager.CreateSingleton<TargetComponent>();
+                if (!SystemAPI.TryGetSingletonEntity<TargetComponent>(out Entity entity)) {
+                    entity = EntityManager.CreateSingleton<TargetComponent>();
+                    EntityManager.AddComponent<ActiveTag>(entity);
+                }
+                SystemAPI.SetComponentEnabled<ActiveTag>(entity, true);
 
                 switch (_lastAction) {
                     case UnitAction.Attack: {
@@ -34,6 +36,8 @@ namespace Darkos {
                             break;
                         }
                 }
+
+                _lastAction = null;
             }
         }
 
