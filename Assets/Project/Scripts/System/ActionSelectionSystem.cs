@@ -4,7 +4,7 @@ namespace Darkos {
 
     [UpdateInGroup(typeof(InitializationSystemGroup))]
     [DisableAutoCreation]
-    public partial class UnitSelectionSystem : SystemBase {
+    public partial class ActionSelectionSystem : SystemBase {
 
         private UnitAction? _lastAction;
 

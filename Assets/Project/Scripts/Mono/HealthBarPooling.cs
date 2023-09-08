@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 namespace Darkos {
     public class HealthBarPooling : MonoBehaviour {
+
         public static HealthBarPooling Instance;
 
         [SerializeField] private GameObject _healthBarPrefab;

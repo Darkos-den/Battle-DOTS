@@ -1,6 +1,7 @@
 using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Transforms;
 using UnityEngine;
 
 namespace Darkos {
@@ -14,10 +15,12 @@ namespace Darkos {
     public partial class TurnBaseSystem : SystemBase {
 
         private SystemHandle _actionInputSystem;
+        private SystemHandle _unitInputSystem;
         private GameState _gameState;
 
         protected override void OnCreate() {
-            _actionInputSystem = World.GetOrCreateSystem<UnitSelectionSystem>();
+            _actionInputSystem = World.GetOrCreateSystem<ActionSelectionSystem>();
+            _unitInputSystem = World.GetOrCreateSystem<SelectionInputSystem>();
             _gameState = GameState.Idle;
         }
 
@@ -33,7 +36,6 @@ namespace Darkos {
                         break;
                     }
                 case GameState.UnitSelection: {
-                        
                         //получаем текущего игрока
                         var playerEntity = SystemAPI.QueryBuilder()
                             .WithAll<PlayerComponent>()
@@ -43,23 +45,33 @@ namespace Darkos {
                             .First();
                         var player = SystemAPI.GetComponent<PlayerComponent>(playerEntity);
 
-                        UnitComponent? activeUnit = null;
+                        Entity? activeUnit = null;
 
                         //пробуем активирвоать юнит
-                        foreach((var component, var ready, var active) in
+                        foreach((var component, var ready, var active, var entity) in
                             SystemAPI.Query<UnitComponent, EnabledRefRO<ReadyToActionTag>, EnabledRefRW<ActiveTag>>()
+                            .WithEntityAccess()
                             .WithOptions(EntityQueryOptions.IgnoreComponentEnabledState)
                             .WithSharedComponentFilter(new PlayerIdComponent { Id = player.Id })
                         ) {
                             if (ready.ValueRO) {
                                 active.ValueRW = true;
-                                activeUnit = component;
+                                activeUnit = entity;
                                 break;
                             }
                         }
 
                         if (activeUnit != null) {
                             //если есть активный юнит
+
+                            var transform = SelectionIndicatorPooling.Instance.GetSelectionIndicator();
+
+                            var unitPosition = SystemAPI.GetComponent<LocalTransform>((Entity)activeUnit).Position;
+                            unitPosition.y = transform.position.y;
+
+                            transform.position = unitPosition;
+                            transform.gameObject.SetActive(true);
+
                             //выбираем действие
 
                             _gameState = GameState.ActionSelection;
@@ -76,17 +88,22 @@ namespace Darkos {
                         //проверяем выбор действия
                         _actionInputSystem.Update(World.Unmanaged);
 
-                        Entity entity;
-                        if (SystemAPI.TryGetSingletonEntity<TargetComponent>(out entity)) {
+                        if (SystemAPI.TryGetSingletonEntity<TargetComponent>(out Entity entity)) {
                             //если действие выбрано
                             //выбираем цель
                             _gameState = GameState.TargetSelection;
                         }
-                        
+
                         break;
                     }
                 case GameState.TargetSelection: {
-                        //todo: TBD
+                        //проверяем выбор цели
+                        _unitInputSystem.Update(World.Unmanaged);
+
+                        foreach (var item in SystemAPI.Query<TargetTag>()) {
+                            _gameState = GameState.ActionExecution;
+                            break;
+                        }
                         break;
                     }
                 case GameState.ActionExecution: {
@@ -94,7 +111,6 @@ namespace Darkos {
                         break;
                     }
                 case GameState.PlayerActivation: {
-                        
                         var query = SystemAPI.QueryBuilder()
                             .WithAll<PlayerComponent>()
                             .WithAll<ReadyToActionTag>()
