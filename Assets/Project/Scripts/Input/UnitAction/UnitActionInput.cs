@@ -14,19 +14,7 @@ public class UnitActionInput {
 
     public UnityAction<UnitAction> OnActionSelected;
 
-    private bool _enabled;
-
     public void SelectAction(UnitAction action) {
-        if (_enabled) {
-            OnActionSelected?.Invoke(action);
-        }
-    }
-
-    public void Enable() {
-        _enabled = true;
-    }
-
-    public void Disable() {
-        _enabled = false;
+        OnActionSelected?.Invoke(action);
     }
 }

@@ -14,25 +14,31 @@ namespace Darkos {
         private PlayerInput _input;
         private Camera _camera;
 
+        private bool _active = false;
+
         protected override void OnCreate() {
             _input = new();
-        }
-
-        protected override void OnStartRunning() {
             _camera = Camera.main;
             _input.General.Selection.performed += OnClick;
             _input.Enable();
         }
 
-        protected override void OnStopRunning() {
+        protected override void OnDestroy() {
             _input.General.Selection.performed -= OnClick;
             _input.Dispose();
         }
 
         protected override void OnUpdate() {
+            if (!_active) {
+                _active = true;
+            }
         }
 
         private void OnClick(InputAction.CallbackContext context) {
+            if(!_active) {
+                return;
+            }
+
             var collision = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
 
             var screenPos = context.ReadValue<Vector2>();
@@ -72,6 +78,8 @@ namespace Darkos {
 
                 SystemAPI.SetComponentEnabled<TargetTag>(entity, true);
             }
+
+            _active = false;
         }
     }
 }
