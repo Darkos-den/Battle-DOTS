@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
-using Unity.Entities.UniversalDelegates;
 
 public class NodeView : UnityEditor.Experimental.GraphView.Node {
 
@@ -45,13 +44,14 @@ public class NodeView : UnityEditor.Experimental.GraphView.Node {
 
         var offset = width - inputContainer.resolvedStyle.width + 5;
 
-        var center = new Vector2(0, -height/2);
+        var center = new Vector2(0, -height);
 
         foreach (var item in inputContainer.Children()){
             item.transform.position = center;
         }
 
         center.x *= -1;
+        center.y = 0;
 
         foreach (var item in outputContainer.Children()) {
             item.transform.position = center;

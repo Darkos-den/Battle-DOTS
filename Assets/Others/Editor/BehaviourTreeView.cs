@@ -67,8 +67,7 @@ public class BehaviourTreeView : GraphView {
                 parentView.output.Connect(val);
                 childView.input.Connect(val);
 
-                //var edge = parentView.output.ConnectTo(childView.input);
-                val.isGhostEdge = true;
+                //var val = parentView.output.ConnectTo(childView.input);
                 AddElement(val);
             }
         }
@@ -153,7 +152,6 @@ public class BehaviourTreeView : GraphView {
     }
 
     void CreateNodeView(Node node, Vector2 initialPosition) {
-        Debug.Log(">> new pos: " + initialPosition);
         var nodeView = new NodeView(node);
         nodeView.style.left = initialPosition.x;
         nodeView.style.top = initialPosition.y;
