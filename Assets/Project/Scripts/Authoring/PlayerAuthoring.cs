@@ -22,7 +22,7 @@ namespace Darkos {
                 AddComponent<ReadyToActionTag>(entity);
                 AddComponent<ActiveTag>(entity);
                 SetComponentEnabled<ActiveTag>(entity, false);
-                AddSharedComponent(entity, new PlayerStateComponent { Value = PlayerState.Ready });
+                AddComponent(entity, new PlayerStateComponent { Value = PlayerState.Ready });
             }
         }
     }

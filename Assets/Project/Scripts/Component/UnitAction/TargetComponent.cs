@@ -5,5 +5,7 @@ namespace Darkos {
     public struct TargetComponent : IComponentData {
 
         public TargetType Type;
+
+        public int HealtEffect;
     }
 }

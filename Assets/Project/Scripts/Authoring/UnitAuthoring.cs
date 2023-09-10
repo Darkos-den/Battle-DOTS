@@ -21,9 +21,10 @@ namespace Darkos {
                 AddComponent<ReadyToActionTag>(entity);
                 AddComponent<ActiveTag>(entity);
                 SetComponentEnabled<ActiveTag>(entity, false);
-                AddSharedComponent(entity, new PlayerIdComponent { Id = authoring.PlayerId });
+                AddComponent(entity, new PlayerIdComponent { Id = authoring.PlayerId });
                 AddComponent<TargetTag>(entity);
                 SetComponentEnabled<TargetTag>(entity, false);
+                AddComponent(entity, new UnitStateComponent { Value = UnitState.Ready });
             }
         }
     }

@@ -1,6 +1,6 @@
 using Unity.Entities;
 
-public struct PlayerIdComponent : ISharedComponentData {
+public struct PlayerIdComponent : IComponentData {
 
     public int Id;
 }

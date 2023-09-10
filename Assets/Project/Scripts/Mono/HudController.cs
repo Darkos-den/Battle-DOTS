@@ -11,4 +11,8 @@ public class HudController : MonoBehaviour {
     public void OnAttackClick() {
         _input.SelectAction(UnitAction.Attack);
     }
+
+    public void OnHealClick() {
+        _input.SelectAction(UnitAction.Heal);
+    }
 }

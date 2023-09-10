@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8414389370509954819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1720fc1658ee5044584f5cbfc36a6d9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  guid: 9c86d33f44ce2d54d9b45e6aed404815
+  position: {x: 142.64001, y: 361}
+  title: Idle
+  stateId: 3
+  horizontalInput: 1
+  horizontalOutput: 1
+--- !u!114 &-961725111984174330
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1720fc1658ee5044584f5cbfc36a6d9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  guid: be9d61c930653d74ca8f356e32cf1bbe
+  position: {x: 380, y: 347}
+  title: Unit Action
+  stateId: 4
+  horizontalInput: 1
+  horizontalOutput: 1
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bba9c4d2d9f21ab49922f26dde71a39f, type: 3}
+  m_Name: GameStateTree
+  m_EditorClassIdentifier: 
+  nodes:
+  - {fileID: -8414389370509954819}
+  - {fileID: 8189009546253181930}
+  - {fileID: 4446856440577199420}
+  - {fileID: -961725111984174330}
+--- !u!114 &4446856440577199420
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1720fc1658ee5044584f5cbfc36a6d9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  guid: 94f51d96057068d49a66903fcf0facae
+  position: {x: 132, y: 93}
+  title: Player Activation
+  stateId: 1
+  horizontalInput: 1
+  horizontalOutput: 1
+--- !u!114 &8189009546253181930
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1720fc1658ee5044584f5cbfc36a6d9d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  guid: 05d12db6b665c1e48be0b6428551fc39
+  position: {x: 274, y: 226}
+  title: User Activation
+  stateId: 2
+  horizontalInput: 1
+  horizontalOutput: 1

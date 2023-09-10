@@ -2,7 +2,7 @@ using Unity.Entities;
 
 namespace Darkos {
 
-    public struct PlayerStateComponent : ISharedComponentData {
+    public struct PlayerStateComponent : IComponentData {
 
         public PlayerState Value;
     }

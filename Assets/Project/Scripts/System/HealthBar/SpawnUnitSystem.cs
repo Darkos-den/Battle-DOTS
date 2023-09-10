@@ -5,6 +5,8 @@ using UnityEngine;
 
 namespace Darkos {
 
+    [UpdateInGroup(typeof(InitializationSystemGroup))]
+    [UpdateAfter(typeof(BootSystem))]
     public partial class SpawnUnitSystem : SystemBase {
 
         protected override void OnUpdate() {

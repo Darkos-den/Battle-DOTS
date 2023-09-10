@@ -1,5 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/Project/Sample/SampleEditor.uss?fileID=7433441132597879392&amp;guid=44fa8ef2839f6814782a0584a201afd6&amp;type=3#SampleEditor" />
-    <ui:Label text="Hello World! From UXML" />
-    <SampleView style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);" />
-</ui:UXML>

@@ -1,6 +1,6 @@
 namespace Darkos {
 
     public enum GameState {
-        PlayerActivation, UnitActivation, Idle
+        PlayerActivation, UnitActivation, Idle, UnitAction
     }
 }

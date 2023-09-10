@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/StateMachine/Editor/StateMachine.uss?fileID=7433441132597879392&amp;guid=05fccc8c0b93f1e43a0d694c292914c2&amp;type=3#StateMachine" />
+    <StateMachine.SplitView fixed-pane-initial-dimension="200">
+        <ui:VisualElement style="flex-grow: 1;">
+            <ui:Label tabindex="-1" text="Inspector" parse-escape-sequences="true" display-tooltip-when-elided="true" style="background-color: rgb(37, 37, 37); color: rgb(196, 196, 196);" />
+            <ui:Toggle label="Edit Mode" />
+            <uie:ObjectField label="State Machine" type="StateMachine.StateTree, Assembly-CSharp" />
+        </ui:VisualElement>
+        <ui:VisualElement style="flex-grow: 1;">
+            <ui:Label tabindex="-1" text="Preview" parse-escape-sequences="true" display-tooltip-when-elided="true" style="background-color: rgb(37, 37, 37); color: rgb(196, 196, 196);" />
+            <StateMachine.StateGraphView focusable="true" style="flex-grow: 1;" />
+        </ui:VisualElement>
+    </StateMachine.SplitView>
+</ui:UXML>

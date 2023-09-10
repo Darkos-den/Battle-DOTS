@@ -1,15 +1,15 @@
 using Unity.Entities;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 namespace Darkos {
 
-    [DisableAutoCreation]
     public partial class ActionSelectionSystem : SystemBase {
 
-        private bool _active = false;
+        private UnitAction? _lastAction = null;
 
         protected override void OnCreate() {
-            Debug.Log(">>> OnCreate");
+            RequireForUpdate<AwaitActionTag>();
             UnitActionInput.Instance.OnActionSelected += OnUnitAction;
         }
 
@@ -18,38 +18,37 @@ namespace Darkos {
         }
 
         protected override void OnUpdate() {
-            if( !_active) {
-                Debug.Log(">>> activate action selection");
-                _active = true;
-            }
-        }
-
-        private void OnUnitAction(UnitAction action) {
-            Debug.Log(">>> OnUnitAction | " + _active);
-            if (!_active) {
+            if(_lastAction == null) {
                 return;
             }
 
-            if (!SystemAPI.TryGetSingletonEntity<TargetComponent>(out Entity entity)) {
-                entity = EntityManager.CreateSingleton<TargetComponent>();
-                EntityManager.AddComponent<ActiveTag>(entity);
-            }
-            SystemAPI.SetComponentEnabled<ActiveTag>(entity, true);
+            Entity unit = SystemAPI.GetSingleton<ActiveUnit>().Value;
 
-            switch (action) {
+            if (unit == Entity.Null) {
+                return;
+            }
+
+            var entity = EntityManager.CreateSingleton<TargetComponent>();
+
+            switch (_lastAction) {
                 case UnitAction.Attack: {
-                        EntityManager.AddComponent<AttackActionFlag>(entity);
-                        EntityManager.SetComponentData(entity, new TargetComponent { Type = TargetType.Enemy });
+                        EntityManager.SetComponentData(entity, new TargetComponent { Type = TargetType.Enemy, HealtEffect = -30 });
                         break;
                     }
                 case UnitAction.Heal: {
-                        EntityManager.AddComponent<HealActionFlag>(entity);
-                        EntityManager.SetComponentData(entity, new TargetComponent { Type = TargetType.Friend });
+                        EntityManager.SetComponentData(entity, new TargetComponent { Type = TargetType.Friend, HealtEffect = 20 });
                         break;
                     }
             }
 
-            _active = false;
+            var tag = SystemAPI.GetSingletonEntity<AwaitActionTag>();
+            EntityManager.DestroyEntity(tag);
+
+            _lastAction = null;
+        }
+
+        private void OnUnitAction(UnitAction action) {
+            _lastAction = action;
         }
     }
 }
