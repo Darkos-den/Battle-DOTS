@@ -15,9 +15,9 @@ public partial struct UnitAnimateSystem : ISystem {
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 
         foreach (var (playerGameObjectPrefab, entity) in
-                 SystemAPI.Query<PlayerGameObjectPrefab>().WithNone<PlayerAnimatorReference>().WithEntityAccess()) {
+                 SystemAPI.Query<UnitGameObjectPrefab>().WithNone<UnitAnimatorReference>().WithEntityAccess()) {
             var newCompanionGameObject = Object.Instantiate(playerGameObjectPrefab.Value);
-            var newAnimatorReference = new PlayerAnimatorReference {
+            var newAnimatorReference = new UnitAnimatorReference {
                 Value = newCompanionGameObject.GetComponent<Animator>()
             };
 
@@ -34,25 +34,23 @@ public partial struct UnitAnimateSystem : ISystem {
         }
 
         foreach (var (transform, animatorReference) in
-                 SystemAPI.Query<LocalTransform, PlayerAnimatorReference>()) {
+                 SystemAPI.Query<LocalTransform, UnitAnimatorReference>()) {
             animatorReference.Value.transform.position = transform.Position;
             animatorReference.Value.transform.rotation = transform.Rotation;
         }
 
-        foreach (var animatorReference in SystemAPI.Query<PlayerAnimatorReference>().WithAll<MovingComponent>()) {
-            Debug.Log(">> moving");
+        foreach (var animatorReference in SystemAPI.Query<UnitAnimatorReference>().WithAll<MovingComponent>()) {
             animatorReference.Value.SetBool("IsMoving", true);
         }
-        foreach (var animatorReference in SystemAPI.Query<PlayerAnimatorReference>().WithNone<MovingComponent>()) {
-            Debug.Log(">> stopped");
+        foreach (var animatorReference in SystemAPI.Query<UnitAnimatorReference>().WithNone<MovingComponent>()) {
             animatorReference.Value.SetBool("IsMoving", false);
         }
 
         foreach (var (animatorReference, entity) in
-                 SystemAPI.Query<PlayerAnimatorReference>().WithNone<PlayerGameObjectPrefab, LocalTransform>()
+                 SystemAPI.Query<UnitAnimatorReference>().WithNone<UnitGameObjectPrefab, LocalTransform>()
                      .WithEntityAccess()) {
             Object.Destroy(animatorReference.Value.gameObject);
-            ecb.RemoveComponent<PlayerAnimatorReference>(entity);
+            ecb.RemoveComponent<UnitAnimatorReference>(entity);
         }
 
         ecb.Playback(state.EntityManager);

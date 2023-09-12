@@ -1,12 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 
-public class PlayerGameObjectPrefab : IComponentData {
-    public GameObject Value;
-}
+namespace Darkos {
 
-public class PlayerAnimatorReference : ICleanupComponentData {
-    public Animator Value;
+    public class UnitGameObjectPrefab : IComponentData {
+        public GameObject Value;
+    }
+
+    public class UnitAnimatorReference : ICleanupComponentData {
+        public Animator Value;
+    }
+
 }

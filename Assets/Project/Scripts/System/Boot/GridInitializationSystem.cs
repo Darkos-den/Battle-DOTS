@@ -14,6 +14,8 @@ namespace Darkos {
 
         [BurstCompile]
         void OnUpdate(ref SystemState state) {
+            state.EntityManager.CreateSingleton<ActiveUnit>();
+
             state.EntityManager.CreateSingleton(new GridComponent {
                 Width = 10,
                 Height = 10,

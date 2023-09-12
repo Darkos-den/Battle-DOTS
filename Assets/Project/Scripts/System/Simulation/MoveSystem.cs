@@ -1,5 +1,4 @@
 using Unity.Burst;
-using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -19,41 +18,41 @@ namespace Darkos {
 
         void OnDestroy(ref SystemState state) { }
 
-        //[BurstCompile]
+        [BurstCompile]
         void OnUpdate(ref SystemState state) {
-            var grid = SystemAPI.GetSingleton<GridComponent>();
+            var active = SystemAPI.GetSingleton<ActiveUnit>();
 
-            var buffer = new EntityCommandBuffer(Allocator.Temp);
-
-            foreach ((var position, var transform, var destination, var entity) in 
-                SystemAPI.Query<RefRW<PositionComponent>, RefRW<LocalTransform>, MovingComponent>()
-                .WithEntityAccess()
-            ) {
-                var dest = new float3(destination.DestinationX, 0, destination.DestinationY) * grid.CellSize;
-                dest += new float3(grid.CellSize, 0, grid.CellSize) * 0.5f;
-                dest.y = transform.ValueRO.Position.y;
-
-                var direction = dest - transform.ValueRO.Position;
-                direction = math.normalize(direction);
-
-                var destRotation = quaternion.LookRotation(direction, new float3(0, 1, 0));
-
-                //var angle = Quaternion.Angle(transform.ValueRW.Rotation, destRotation);
-                //Debug.Log(">> angle: " + angle);
-
-                transform.ValueRW.Rotation = destRotation;
-                if (math.distance(dest, transform.ValueRO.Position) < 0.05) {
-                    transform.ValueRW.Position = dest;
-                    buffer.RemoveComponent<MovingComponent>(entity);
-
-                    position.ValueRW.X = destination.DestinationX;
-                    position.ValueRW.Y = destination.DestinationY;
-                } else {
-                    transform.ValueRW.Position += direction * Time.deltaTime * speed;
-                }
+            if (active.Entity == Entity.Null) {
+                return;
             }
 
-            buffer.Playback(state.EntityManager);
+            var grid = SystemAPI.GetSingleton<GridComponent>();
+
+            var position = SystemAPI.GetComponentRW<PositionComponent>(active.Entity);
+            var transform = SystemAPI.GetComponentRW<LocalTransform>(active.Entity);
+            var destination = SystemAPI.GetComponent<MovingComponent>(active.Entity);
+
+            var dest = new float3(destination.DestinationX, 0, destination.DestinationY) * grid.CellSize;
+            dest += new float3(grid.CellSize, 0, grid.CellSize) * 0.5f;
+            dest.y = transform.ValueRO.Position.y;
+
+            var direction = dest - transform.ValueRO.Position;
+            direction = math.normalize(direction);
+
+            var destRotation = quaternion.LookRotation(direction, new float3(0, 1, 0));
+
+            transform.ValueRW.Rotation = destRotation;
+            if (math.distance(dest, transform.ValueRO.Position) < 0.05) {
+                transform.ValueRW.Position = dest;
+                state.EntityManager.RemoveComponent<MovingComponent>(active.Entity);
+
+                position.ValueRW.X = destination.DestinationX;
+                position.ValueRW.Y = destination.DestinationY;
+
+                SystemAPI.SetSingleton(new ActiveUnit { Entity = Entity.Null });
+            } else {
+                transform.ValueRW.Position += direction * Time.deltaTime * speed;
+            }
         }
     }
 }
